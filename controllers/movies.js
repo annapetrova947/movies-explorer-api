@@ -44,7 +44,16 @@ const deleteMovie = (req, res, next) => {
     });
 };
 
+const getMovies = (req, res, next) => {
+  MovieModel.find({ owner: req.user._id })
+    .then((movies) => {
+      res.send(movies);
+    })
+    .catch(next);
+};
+
 module.exports = {
   createMovie,
   deleteMovie,
+  getMovies,
 };

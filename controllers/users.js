@@ -5,7 +5,7 @@ const Codes = require('../utils/utils');
 
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
-const CoflictError = require('../errors/conflictError');
+const ConflictError = require('../errors/conflictError');
 const UnauthorizedError = require('../errors/unauthorizedError');
 
 const { JWT_SECRET = 'SECRET_KEY' } = process.env;
@@ -24,7 +24,7 @@ const createUser = (req, res, next) => {
     }))
     .catch((e) => {
       if (e.code === 11000) {
-        next(new CoflictError(e.message));
+        next(new ConflictError(e.message));
       } else if (e.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при регистрации пользователя'));
       } else {
@@ -71,6 +71,9 @@ const updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
+      }
+      if (err.code === 11000) {
+        return next(new ConflictError('Такой пользователь уже существует'));
       }
       return next(err);
     });
